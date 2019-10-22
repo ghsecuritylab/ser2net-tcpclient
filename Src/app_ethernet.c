@@ -76,7 +76,7 @@ void tcp_client_connect(void)
 
         /* connect to destination address/port */
         tcp_connect(client_pcb, &DestIPaddr, dest_port, tcp_client_connected);
-        printf("connected to server:%d.%d.%d.%d:%d\r\n", dest_ip[0], dest_ip[1], dest_ip[2], dest_ip[3], dest_port );
+        printf("[>>] connected to server:%d.%d.%d.%d:%d\r\n", dest_ip[0], dest_ip[1], dest_ip[2], dest_ip[3], dest_port );
     }
     else
     {
@@ -120,7 +120,7 @@ static err_t tcp_client_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
             es->state = ES_CONNECTED;
             es->pcb = tpcb;
 
-            sprintf((char*)data, "sending tcp client message %d\r\n", (int)message_count);
+            sprintf((char*)data, "**********WELCOME TO REMOTE CONSOLE**********\r\n");
 
             /* allocate pbuf */
             es->p_tx = pbuf_alloc(PBUF_TRANSPORT, strlen((char*)data) , PBUF_POOL);
