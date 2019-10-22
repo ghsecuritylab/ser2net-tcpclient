@@ -42,7 +42,8 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+#define BUFSIZE 8192
+#define CMD_BUFSIZE 30
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

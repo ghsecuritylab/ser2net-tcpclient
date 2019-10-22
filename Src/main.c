@@ -52,7 +52,8 @@
 
 /* USER CODE BEGIN PV */
 extern struct netif gnetif;
-
+uint8_t msg_buff[BUFSIZE] = {0,};
+uint8_t cmd_buff[CMD_BUFSIZE] = {0,};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -117,8 +118,11 @@ int main(void)
   MX_LWIP_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  printf("[OK] system initialized\r\n");
+
+  printf("[OK ] system initialized\r\n");
   net_ini();
+    __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
+    HAL_UART_Receive_DMA(&huart2, (uint8_t*)msg_buff, BUFSIZE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -201,6 +205,56 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+/**
+ *
+ * @param huart
+ */
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if(huart == &huart2)
+    {
+        __HAL_UART_DISABLE_IT(&huart2, UART_IT_IDLE);
+        HAL_UART_DMAStop(&huart2);
+        HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+        uint32_t er = HAL_UART_GetError(&huart2);
+
+        switch(er)
+        {
+            case HAL_UART_ERROR_PE:
+                printf("[ERR] ERR_Callbck - Parity error\r\n");
+                __HAL_UART_CLEAR_PEFLAG(&huart2);
+                huart->ErrorCode = HAL_UART_ERROR_NONE;
+                break;
+
+            case HAL_UART_ERROR_NE:
+                printf("[ERR] ERR_Callbck - Noise error\r\n");
+                __HAL_UART_CLEAR_NEFLAG(&huart2);
+                huart->ErrorCode = HAL_UART_ERROR_NONE;
+                break;
+
+            case HAL_UART_ERROR_FE:
+                printf("[ERR] ERR_Callbck - Frame error\r\n");
+                __HAL_UART_CLEAR_FEFLAG(&huart2);
+                huart->ErrorCode = HAL_UART_ERROR_NONE;
+                break;
+
+            case HAL_UART_ERROR_ORE:
+                printf("[ERR] ERR_Callbck - Overrun error\r\n");
+                __HAL_UART_CLEAR_OREFLAG(huart);
+                huart->ErrorCode = HAL_UART_ERROR_NONE;
+                break;
+
+            case HAL_UART_ERROR_DMA:
+                printf("[ERR] ERR_Callbck - DMA transfer error\r\n");
+                huart->ErrorCode = HAL_UART_ERROR_NONE;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+}
 /* USER CODE END 4 */
 
 /**
