@@ -25,7 +25,7 @@ __IO uint32_t message_count=0;
 __IO uint8_t net_stat=0;
 
 uint8_t data[100];
-uint8_t ip_dest[4];
+uint8_t dest_ip[4];
 uint16_t dest_port;
 uint8_t is_tcp_conn;
 
@@ -72,11 +72,11 @@ void tcp_client_connect(void)
 
     if (client_pcb != NULL)
     {
-        IP4_ADDR( &DestIPaddr, ip_dest[0], ip_dest[1], ip_dest[2], ip_dest[3]);
+        IP4_ADDR(&DestIPaddr, dest_ip[0], dest_ip[1], dest_ip[2], dest_ip[3]);
 
         /* connect to destination address/port */
         tcp_connect(client_pcb, &DestIPaddr, dest_port, tcp_client_connected);
-        printf("connected to server:%d.%d.%d.%d:%d\r\n", ip_dest[0], ip_dest[1], ip_dest[2], ip_dest[3], dest_port );
+        printf("connected to server:%d.%d.%d.%d:%d\r\n", dest_ip[0], dest_ip[1], dest_ip[2], dest_ip[3], dest_port );
     }
     else
     {
@@ -91,11 +91,11 @@ void tcp_client_connect(void)
  */
 void net_ini(void)
 {
-    ip_dest[0] = 192;
-    ip_dest[1] = 168;
-    ip_dest[2] = 1;
-    ip_dest[3] = 144;
-    dest_port = 7788;
+    dest_ip[0] = DEST_IP_ADDR0;
+    dest_ip[1] = DEST_IP_ADDR1;
+    dest_ip[2] = DEST_IP_ADDR2;
+    dest_ip[3] = DEST_IP_ADDR3;
+    dest_port = DEST_PORT;
     net_stat = ES_CONNECTING;
     tcp_client_connect();
 }
